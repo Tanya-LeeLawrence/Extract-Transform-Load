@@ -22,22 +22,45 @@ def extract_from_json(file_to_process):
 def extract_from_xml(xmlfile):
     tree = ET.parse(xmlfile)
     root = tree.getroot()
-    
+    extracted_data = []
+
     for person in root.findall("person"):
+        # Handling car_model
         car_model_element = person.find("car_model")
         car_model = car_model_element.text if car_model_element is not None else None
-        
-        # Process the car_model or handle the case where car_model is None
-        print(f"Car Model: {car_model}")
 
-        year_of_manufacture = int(person.find("year_of_manufacture").text)
-        price = float(person.find("price").text)
-        fuel = person.find("fuel").text
-        dataframe = dataframe.append({"car_model": car_model, 
-                                      "year_of_manufacture": year_of_manufacture, 
-                                      "price": price, 
-                                      "fuel": fuel}, ignore_index=True)
-    return dataframe
+        # Handling year_of_manufacture
+        year_of_manufacture_element = person.find("year_of_manufacture")
+        if year_of_manufacture_element is not None and year_of_manufacture_element.text.isdigit():
+            year_of_manufacture = int(year_of_manufacture_element.text)
+        else:
+            year_of_manufacture = None
+
+        # Handling price
+        price_element = person.find("price")
+        if price_element is not None:
+            try:
+                price = float(price_element.text)
+            except ValueError:
+                price = None
+        else:
+            price = None
+
+        # Handling fuel
+        fuel_element = person.find("fuel")
+        fuel = fuel_element.text if fuel_element is not None else None
+
+        # Append the extracted data to the list or DataFrame
+        extracted_data.append({
+            "car_model": car_model,
+            "year_of_manufacture": year_of_manufacture,
+            "price": price,
+            "fuel": fuel
+            
+        })
+
+    return pd.DataFrame(extracted_data)
+
 
 # Extract Function
 def extract():
