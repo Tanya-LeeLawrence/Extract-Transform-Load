@@ -19,12 +19,17 @@ def extract_from_json(file_to_process):
     return dataframe
 
 # XML Extract Function
-def extract_from_xml(file_to_process):
-    dataframe = pd.DataFrame(columns=['car_model', 'year_of_manufacture', 'price', 'fuel'])
-    tree = ET.parse(file_to_process)
+def extract_from_xml(xmlfile):
+    tree = ET.parse(xmlfile)
     root = tree.getroot()
-    for person in root:
-        car_model = person.find("car_model").text
+    
+    for person in root.findall("person"):
+        car_model_element = person.find("car_model")
+        car_model = car_model_element.text if car_model_element is not None else None
+        
+        # Process the car_model or handle the case where car_model is None
+        print(f"Car Model: {car_model}")
+
         year_of_manufacture = int(person.find("year_of_manufacture").text)
         price = float(person.find("price").text)
         fuel = person.find("fuel").text
