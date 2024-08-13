@@ -82,8 +82,14 @@ def extract():
 
 # Transform Function
 def transform(data):
-    data['price'] = round(data.price, 2)
+    # Ensure that 'price' is a numeric type, replacing None with NaN
+    data['price'] = pd.to_numeric(data['price'], errors='coerce')
+    
+    # Round the 'price' column to 2 decimal places
+    data['price'] = data['price'].round(2)
+    
     return data
+
 
 # Load Function
 def load(targetfile, data_to_load):
